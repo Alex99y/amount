@@ -89,4 +89,32 @@ export class Amount<const T extends string> {
     static isType<U extends string>(obj: any, type: U): obj is Amount<U> {
         return obj instanceof Amount && obj.getType() === type && typeof obj.getRawValue() === 'bigint';
     }
+
+    static fromDecimal <const T extends string> (type: T, decimalStr: string, decimals: number = 0): Amount<T> {
+        if (decimals < 0 || !Number.isInteger(decimals) || decimals > 18) {
+            throw new Error('Decimals must be a non-negative integer between 0 and 18');
+        }
+        const regex = /^-?\d+(\.\d+)?$/;
+        if (!regex.test(decimalStr)) {
+            throw new Error('Invalid decimal string format');
+        }
+        
+        const isNegative = decimalStr.startsWith('-');
+        const absDecimalStr = isNegative ? decimalStr.slice(1) : decimalStr;
+        const parts = absDecimalStr.split('.');
+        let integerPart = parts[0];
+        let fractionalPart = parts[1] || '';
+
+        if (fractionalPart.length > decimals) {
+            throw new Error(`Decimal string has more fractional digits than allowed by decimals (${decimals})`);
+        }
+
+        while (fractionalPart.length < decimals) {
+            fractionalPart += '0';
+        }
+
+        const rawStr = integerPart + fractionalPart;
+        const rawValue = BigInt((isNegative ? '-' : '') + (rawStr === '' ? '0' : rawStr.replace(/^0+/, '') || '0'));
+        return new Amount<T>(type, rawValue, decimals);
+    }
 }

@@ -156,4 +156,67 @@ describe('Amount', () => {
         })
     })
     
+    describe('fromDecimal', () => {
+        it('should create Amount from decimal string correctly with default decimals', () => {
+            const amount = Amount.fromDecimal(typeA, '1234.56', 2)
+            expect(amount.getRawValue()).toBe(123456n)
+        })
+
+        it('should create Amount from decimal string correctly with custom decimals', () => {
+            const amount = Amount.fromDecimal(typeA, '12.3456', 4)
+            expect(amount.getRawValue()).toBe(123456n)
+        })
+
+        it('should handle negative values correctly', () => {
+            const amount = Amount.fromDecimal(typeA, '-1234.56', 2)
+            expect(amount.getRawValue()).toBe(-123456n)
+        })
+
+        it('should handle zero correctly', () => {
+            const amount = Amount.fromDecimal(typeA, '0', 2)
+            expect(amount.getRawValue()).toBe(0n)
+        })
+
+        it('should handle small values correctly', () => {
+            const amount = Amount.fromDecimal(typeA, '0.005', 3)
+            expect(amount.getRawValue()).toBe(5n)
+        })
+
+        it('should handle values smaller than one unit correctly', () => {
+            const amount = Amount.fromDecimal(typeA, '0.5', 2)
+            expect(amount.getRawValue()).toBe(50n)
+        })
+
+        it('should handle large values correctly', () => {
+            const amount = Amount.fromDecimal(typeA, '123456789012.34567890', 8)
+            expect(amount.getRawValue()).toBe(12345678901234567890n)
+        })
+
+        it('should handle zero decimals correctly', () => {
+            const amount = Amount.fromDecimal(typeA, '123456', 2)
+            expect(amount.getRawValue()).toBe(12345600n)
+        })
+
+        it('should handle very large decimals correctly', () => {
+            const amount = Amount.fromDecimal(typeA, '0.000000000000000001', 18)
+            expect(amount.getRawValue()).toBe(1n)
+        })
+
+        it('should handle small values correctly', () => {
+            const amount = Amount.fromDecimal(typeA, '0.005', 10)
+            expect(amount.getRawValue()).toBe(50000000n)
+        })
+
+        it('should throw an error for invalid decimal strings', () => {
+            expect(() => Amount.fromDecimal(typeA, 'abc', 2)).toThrow('Invalid decimal string format')
+            expect(() => Amount.fromDecimal(typeA, '12.34.56', 2)).toThrow('Invalid decimal string format')
+            expect(() => Amount.fromDecimal(typeA, '', 2)).toThrow('Invalid decimal string format')
+        })
+
+        it('should throw an error for invalid decimals', () => {
+            expect(() => Amount.fromDecimal(typeA, '123.45', -1)).toThrow('Decimals must be a non-negative integer between 0 and 18')
+            expect(() => Amount.fromDecimal(typeA, '123.45', 19)).toThrow('Decimals must be a non-negative integer between 0 and 18')
+            expect(() => Amount.fromDecimal(typeA, '123.45', 2.5)).toThrow('Decimals must be a non-negative integer between 0 and 18')
+        })
+    })
 })
