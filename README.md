@@ -1,5 +1,4 @@
 # Amount
-Repository to test github workflows
 
 # Usage
 
