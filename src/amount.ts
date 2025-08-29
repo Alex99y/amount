@@ -21,6 +21,47 @@ export class Amount<const T extends string> {
         return new Amount<T>(this.type, this.rawValue + other.rawValue);
     }
 
+    public minus (other: Amount<T>): Amount<T> {
+        if (this.type !== other.type) {
+            throw new Error('Cannot subtract amounts of different types');
+        }
+        return new Amount<T>(this.type, this.rawValue - other.rawValue);
+    }
+
+    public div (other: Amount<T>): bigint {
+        if (this.type !== other.type) {
+            throw new Error('Cannot divide amounts of different types');
+        }
+        return this.rawValue / other.rawValue;
+    }
+
+    public multiply (other: Amount<T>): Amount<T> {
+        if (this.type !== other.type) {
+            throw new Error('Cannot multiply amounts of different types');
+        }
+        return new Amount<T>(this.type, this.rawValue * other.rawValue);
+    }
+
+    public equals (other: Amount<T>): boolean {
+        return this.type === other.type && this.rawValue === other.rawValue;
+    }
+
+    public isZero (): boolean {
+        return this.rawValue === 0n;
+    }
+
+    public isPositive (): boolean {
+        return this.rawValue > 0n;
+    }
+
+    public isNegative (): boolean {
+        return this.rawValue < 0n;
+    }
+
+    public toString (): string {
+        return `${this.rawValue.toString()} ${this.type}`;
+    }
+
     static isType<U extends string>(obj: any, type: U): obj is Amount<U> {
         return obj instanceof Amount && obj.getType() === type;
     }
