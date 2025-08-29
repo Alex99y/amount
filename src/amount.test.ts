@@ -102,5 +102,58 @@ describe('Amount', () => {
         const amount2 = new Amount(typeB, 5n)
         expect(() => amount1.multiply(amount2 as any)).toThrow('Cannot multiply amounts of different types')
     })
+
+    describe('toDecimalString', () => {
+        it('should convert to decimal string correctly with default decimals', () => {
+            const amount = new Amount(typeA, 123456n, 2)
+            expect(amount.toDecimalString()).toBe('1234.56')
+        })
+
+        it('should convert to decimal string correctly with custom decimals', () => {
+            const amount = new Amount(typeA, 123456n, 4)
+            expect(amount.toDecimalString()).toBe('12.3456')
+        })
+
+        it('should handle negative values correctly', () => {
+            const amount = new Amount(typeA, -123456n)
+            expect(amount.toDecimalString()).toBe('-123456')
+        })
+
+        it('should handle zero correctly', () => {
+            const amount = new Amount(typeA, 0n)
+            expect(amount.toDecimalString()).toBe('0')
+        })
+
+        it('should handle small values correctly', () => {
+            const amount = new Amount(typeA, 5n, 3)
+            expect(amount.toDecimalString()).toBe('0.005')
+        })
+
+        it('should handle values smaller than one unit correctly', () => {
+            const amount = new Amount(typeA, 50n, 2)
+            expect(amount.toDecimalString()).toBe('0.50')
+        })
+
+        it('should handle large values correctly', () => {
+            const amount = new Amount(typeA, 12345678901234567890n, 8)
+            expect(amount.toDecimalString()).toBe('123456789012.34567890')
+        })
+
+        it('should handle zero decimals correctly', () => {
+            const amount = new Amount(typeA, 123456n, 0)
+            expect(amount.toDecimalString()).toBe('123456')
+        })
+
+        it('should handle very large decimals correctly', () => {
+            const amount = new Amount(typeA, 1n, 18)
+            expect(amount.toDecimalString()).toBe('0.000000000000000001')
+        })
+
+        it('should throw an error for invalid decimals', () => {
+            expect(() => new Amount(typeA, 100n, -1)).toThrow('Decimals must be a non-negative integer between 0 and 18')
+            expect(() => new Amount(typeA, 100n, 19)).toThrow('Decimals must be a non-negative integer between 0 and 18')
+            expect(() => new Amount(typeA, 100n, 2.5)).toThrow('Decimals must be a non-negative integer between 0 and 18')
+        })
+    })
     
 })
