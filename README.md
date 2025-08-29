@@ -1,5 +1,9 @@
 # Amount
 
+A simple TypeScript library for representing and manipulating typed amounts using arbitrary precision integers (`bigint`).  
+Supports arithmetic operations, type safety, decimal conversion, and equality checks for values such as currencies, tokens, or units.
+
+
 # Usage
 
 ```typescript
