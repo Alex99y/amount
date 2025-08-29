@@ -1,0 +1,27 @@
+changelog:
+  categories:
+    - title: Workflow changes
+      labels: [workflows]
+
+    - title: Features
+      labels: [feature, enhancement]
+      exclude:
+        labels: [workflows]
+
+    - title:  Fixes
+      labels: [fix, bug]
+      exclude:
+        labels: [workflows]
+    
+    - title: Documentation
+      labels: [documentation, docs]
+      exclude:
+        labels: [workflows]
+
+    - title: Updates
+      labels: [others, updates, refactor]
+      exclude:
+        labels: [workflows]
+
+    - title: Others
+      labels: ["*"]

@@ -1,0 +1,42 @@
+name: Release on tag
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  create_release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (historial completo + tags)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolver commit del tag
+        id: tag
+        run: |
+          echo "sha=$(git rev-list -n 1 '${GITHUB_REF_NAME}')" >> $GITHUB_OUTPUT
+
+      - name: Verificar que el tag está en master
+        id: gate
+        run: |
+          git fetch origin master --quiet
+          if git merge-base --is-ancestor "${{ steps.tag.outputs.sha }}" "origin/master"; then
+            echo "on_master=true" >> $GITHUB_OUTPUT
+          else
+            echo "on_master=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Crear Release
+        if: steps.gate.outputs.on_master == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
