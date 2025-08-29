@@ -63,6 +63,6 @@ export class Amount<const T extends string> {
     }
 
     static isType<U extends string>(obj: any, type: U): obj is Amount<U> {
-        return obj instanceof Amount && obj.getType() === type;
+        return obj instanceof Amount && obj.getType() === type && typeof obj.getRawValue() === 'bigint';
     }
 }
